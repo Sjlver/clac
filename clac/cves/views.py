@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.shortcuts import render, redirect
 
 from cves.models import CveEntry, CveAnnotation, CveAnnotationForm
@@ -60,5 +61,7 @@ def index(request):
     return render(request, 'cves/index.html')
 
 def random_cve(request):
-    entry = CveEntry.objects.order_by('?')[0]
+    entry = CveEntry.objects.filter(cwe_id="CWE-119").annotate(
+            num_annotations=Count('cveannotation')).order_by(
+            'num_annotations', '?')[0]
     return redirect('annotate_cve', cve_id=entry.cve_id)
