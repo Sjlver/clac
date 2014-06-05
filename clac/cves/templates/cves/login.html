@@ -1,0 +1,13 @@
+{% extends "cves/index.html" %}
+
+{% block content %}
+<h2>Login to annotate CVEs</h2>
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+<p>
+  Hi, <input type="text" name="username" placeholder="what should I call you?" />, 
+  <input type="submit" value="Enter" />
+</p>
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+{% endblock content %}
