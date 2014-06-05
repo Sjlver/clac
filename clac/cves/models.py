@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.forms import ModelForm
 
 class CveEntry(models.Model):
     AV_CHOICES = (
@@ -23,7 +24,7 @@ class CveEntry(models.Model):
             ('COMPLETE', 'Complete')
     )
 
-    cve_id = models.CharField(max_length=15)
+    cve_id = models.CharField(max_length=15, unique=True)
 
     access_vector = models.CharField(max_length=max([ len(c[0]) for c in AV_CHOICES]),
                                      choices=AV_CHOICES)
@@ -40,6 +41,9 @@ class CveEntry(models.Model):
 
     cwe_id = models.CharField(max_length=10)
     summary = models.TextField()
+
+    def __str__(self):
+        return "<Entry %s>" % self.cve_id
 
 
 class CveAnnotation(models.Model):
@@ -74,4 +78,16 @@ class CveAnnotation(models.Model):
     approximate_temporal_safety = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
             choices=TRIVALUED_CHOICES)
-    remarks = models.TextField()
+    remarks = models.TextField(blank=True)
+
+    def __str__(self):
+        return "<Annotation for %s by %s>" % (self.cve_entry.cve_id, self.user.username)
+
+
+class CveAnnotationForm(ModelForm):
+    class Meta:
+        model = CveAnnotation
+        fields = ['memory_safety_vulnerability', 'memory_access',
+                  'control_flow_vulnerability', 'undefined_behavior_vulnerability',
+                  'approximate_spatial_safety', 'approximate_temporal_safety',
+                  'remarks']
