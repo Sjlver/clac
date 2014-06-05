@@ -12,14 +12,26 @@
     <script src="/static/cves/js/vendor/modernizr-2.6.2.min.js"></script>
   </head>
   <body>
-    {% block content %}
-    <p>Welcome to the CVE annotation site.</p>
-    <p>Why not start by <a href="{% url 'random_cve' %}">annotating a CVE?</a></p>
-    {% endblock %}
+    <div id="content-container">
+      {% if user.is_authenticated %}
+      <div class="header">
+        <div class="user-menu">
+          Hi, {{ user.username }}.
+          <a href="{% url 'logout' %}">logout</a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% block content %}
+      <p>Welcome to the CVE annotation site.</p>
+      <p>Why not start by <a href="{% url 'random_cve' %}">annotating a CVE?</a></p>
+      {% endblock %}
+    </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="/static/cves/js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
     <script src="/static/cves/js/plugins.js"></script>
     <script src="/static/cves/js/main.js"></script>
+    {% block javascript %}{% endblock %}
   </body>
 </html>

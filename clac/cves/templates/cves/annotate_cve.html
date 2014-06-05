@@ -3,14 +3,124 @@
 {% block content %}
 <h2>Annotate a CVE entry</h2>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<div class="clearfix">
+  <div class="cve-entry">
+    <p class="summary">{{ entry.summary }}</p>
+    <table>
+      <tr>
+        <th>Access Vector</th>
+        <td class="high {% if entry.access_vector == 'NETWORK' %}active{% endif %}">Network</td>
+        <td class="medium {% if entry.access_vector == 'ADJACENT' %}active{% endif %}">Adjacent Network</td>
+        <td class="low {% if entry.access_vector == 'LOCAL' %}active{% endif %}">Local</td>
+      </tr>
+      <tr>
+        <th>Access Complexity</th>
+        <td class="high {% if entry.access_complexity == 'LOW' %}active{% endif %}">Low</td>
+        <td class="medium {% if entry.access_complexity == 'MEDIUM' %}active{% endif %}">Medium</td>
+        <td class="low {% if entry.access_complexity == 'HIGH' %}active{% endif %}">High</td>
+      </tr>
+      <tr>
+        <th>Authentication</th>
+        <td class="high {% if entry.authentication == 'NONE' %}active{% endif %}">None</td>
+        <td class="medium {% if entry.authentication == 'SINGLE_INSTANCE' %}active{% endif %}">Single</td>
+        <td class="low {% if entry.authentication == 'MULTIPLE_INSTANCES' %}active{% endif %}">Multiple</td>
+      </tr>
+      <tr>
+        <th>Confidentiality Impact</th>
+        <td class="high {% if entry.confidentiality_impact == 'COMPLETE' %}active{% endif %}">Complete</td>
+        <td class="medium {% if entry.confidentiality_impact == 'PARTIAL' %}active{% endif %}">Partial</td>
+        <td class="low {% if entry.confidentiality_impact == 'NONE' %}active{% endif %}">None</td>
+      </tr>
+      <tr>
+        <th>Integrity Impact</th>
+        <td class="high {% if entry.integrity_impact == 'COMPLETE' %}active{% endif %}">Complete</td>
+        <td class="medium {% if entry.integrity_impact == 'PARTIAL' %}active{% endif %}">Partial</td>
+        <td class="low {% if entry.integrity_impact == 'NONE' %}active{% endif %}">None</td>
+      </tr>
+      <tr>
+        <th>Availability Impact</th>
+        <td class="high {% if entry.availability_impact == 'COMPLETE' %}active{% endif %}">Complete</td>
+        <td class="medium {% if entry.availability_impact == 'PARTIAL' %}active{% endif %}">Partial</td>
+        <td class="low {% if entry.availability_impact == 'NONE' %}active{% endif %}">None</td>
+      </tr>
+    </table>
+  </div>
 
-<form action="{% url 'annotate_cve' entry.cve_id %}" method="post">
-{% csrf_token %}
-<table>
-{{ form.as_table }}
-<tr><th><label for="submit_annotation">Submit:</label></th>
-    <td><input id="submit_annotation" type="submit" value="Submit" /></td></tr>
-</table>
-</form>
+  <div class="cve-annotation">
+  {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+  <form action="{% url 'annotate_cve' entry.cve_id %}" method="post">
+  {% csrf_token %}
+  <div id="annotation_memory_safety_vulnerability">
+    <p>{{ form.memory_safety_vulnerability.label_tag }} {{ form.memory_safety_vulnerability }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Is this a memory safety vulnerability? These include buffer overflows, null pointer
+      dereferences, out of bound accesses...
+    </p>
+  </div>
+  <div id="annotation_memory_access">
+    <p>{{ form.memory_access.label_tag }} {{ form.memory_access }}
+    [r/w/u]</p>
+    <p class="explanation">
+      Is any of the illegal memory accesses a write? This is needed to
+      overwrite data or code pointers, but not necessarily to crash the program
+      or to read sensitive information.
+    </p>
+  </div>
+  <div id="annotation_control_flow_vulnerability">
+    <p>{{ form.control_flow_vulnerability.label_tag }} {{ form.control_flow_vulnerability }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Does this vulnerability allow to change the control flow of the program?
+      Exploits that “execute arbitrary code” do this, whereas other exploits
+      might only read or write program data.
+    </p>
+  </div>
+  <div id="annotation_undefined_behavior_vulnerability">
+    <p>{{ form.undefined_behavior_vulnerability.label_tag }} {{ form.undefined_behavior_vulnerability }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Is this vulnerability caused by undefined behavior in the program, other
+      than memory safety? For example, it might be due to an integer overflow.
+    </p>
+  </div>
+  <div id="annotation_approximate_spatial_safety">
+    <p>{{ form.approximate_spatial_safety.label_tag }} {{ form.approximate_spatial_safety }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Would enforcing (approximate) spatial memory safety likely prevent this
+      vulnerability? This is done by tools such as AddressSanitizer, and
+      detects out-of-bounds accesses. It might fail when custom memory
+      allocators are used, or when exploits override specific values only.
+    </p>
+  </div>
+  <div id="annotation_approximate_temporal_safety">
+    <p>{{ form.approximate_temporal_safety.label_tag }} {{ form.approximate_temporal_safety }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Would enforcing (approximate) temporal memory safety likely prevent this
+      vulnerability? This class of protection can detect use-after-free and
+      use-after-return bugs.
+    </p>
+  </div>
+  <div id="annotation_remarks">
+    <p>{{ form.remarks.label_tag }} {{ form.remarks }}</p>
+    <p class="explanation">
+      Anything else you'd like to note...
+    </p>
+  </div>
+
+  <p><label for="submit_annotation">Submit (and continue):</label>
+  <input id="submit_annotation" type="submit" value="Submit" /></p>
+  </form>
+  </div>
+</div>
+
 {% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript">
+  $( document ).ready(init_cve_annotation);
+</script>
+{% endblock javascript %}

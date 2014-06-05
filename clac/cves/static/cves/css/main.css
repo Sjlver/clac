@@ -97,9 +97,73 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+#content-container {
+    max-width: 900px;
+    margin: auto;
+}
 
+div.header {
+    padding: 5px;
+    background: #ccc;
+}
 
+div.header .user-menu {
+    text-align: right;
+}
 
+div.cve-entry {
+    width: 49%;
+    float: left;
+    padding-right: 10px;
+}
+
+div.cve-entry th {
+    text-align: right;
+    padding: 2px;
+}
+div.cve-entry td {
+    padding: 2px;
+}
+
+div.cve-entry .high {
+    color: #999;
+    background: #f5807f;
+}
+div.cve-entry .high.active {
+    color: #000;
+    font-weight: bold;
+    background: #f50d0c;
+}
+
+div.cve-entry .medium {
+    color: #999;
+    background: #e8d284;
+}
+div.cve-entry .medium.active {
+    color: #000;
+    font-weight: bold;
+    background: #e8b400;
+}
+
+div.cve-entry .low {
+    color: #999;
+    background: #89e89e;
+}
+div.cve-entry .low.active {
+    color: #000;
+    font-weight: bold;
+    background: #00e834;
+}
+
+div.cve-annotation {
+    width: 49%;
+    float: left;
+}
+
+#annotation_remarks textarea {
+    width: 100%;
+    height: 3em;
+}
 
 
 

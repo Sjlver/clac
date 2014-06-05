@@ -15,8 +15,8 @@ class CveEntry(models.Model):
     )
     AU_CHOICES = (
             ('NONE', 'None'),
-            ('SINGLE', 'Single'),
-            ('MULTIPLE', 'Multiple')
+            ('SINGLE_INSTANCE', 'Single'),
+            ('MULTIPLE_INSTANCES', 'Multiple')
     )
     I_CHOICES = (
             ('NONE', 'None'),
@@ -65,19 +65,24 @@ class CveAnnotation(models.Model):
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
             choices=TRIVALUED_CHOICES)
     memory_access = models.CharField(max_length=max([ len(c[0]) for c in MEMORY_ACCESS_CHOICES]),
-                                     choices=MEMORY_ACCESS_CHOICES)
+                                     choices=MEMORY_ACCESS_CHOICES,
+                                     blank=True)
     control_flow_vulnerability = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
-            choices=TRIVALUED_CHOICES)
+            choices=TRIVALUED_CHOICES,
+            blank=True)
     undefined_behavior_vulnerability = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
-            choices=TRIVALUED_CHOICES)
+            choices=TRIVALUED_CHOICES,
+            blank=True)
     approximate_spatial_safety = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
-            choices=TRIVALUED_CHOICES)
+            choices=TRIVALUED_CHOICES,
+            blank=True)
     approximate_temporal_safety = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
-            choices=TRIVALUED_CHOICES)
+            choices=TRIVALUED_CHOICES,
+            blank=True)
     remarks = models.TextField(blank=True)
 
     def __str__(self):
