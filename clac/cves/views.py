@@ -38,9 +38,8 @@ def login(request):
         if not username:
             raise PermissionDenied
 
-        try:
-            user = authenticate(username=username, password=username)
-        except User.DoesNotExist:
+        user = authenticate(username=username, password=username)
+        if user is None:
             User.objects.create_user(username, '', username)
             user = authenticate(username=username, password=username)
 
