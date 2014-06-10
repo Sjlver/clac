@@ -64,6 +64,9 @@ class CveAnnotation(models.Model):
     memory_safety_vulnerability = models.CharField(
             max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
             choices=TRIVALUED_CHOICES)
+    always_crash = models.CharField(
+            max_length=max([ len(c[0]) for c in TRIVALUED_CHOICES]),
+            choices=TRIVALUED_CHOICES, blank=True)
     memory_access = models.CharField(max_length=max([ len(c[0]) for c in MEMORY_ACCESS_CHOICES]),
                                      choices=MEMORY_ACCESS_CHOICES,
                                      blank=True)
@@ -92,7 +95,7 @@ class CveAnnotation(models.Model):
 class CveAnnotationForm(ModelForm):
     class Meta:
         model = CveAnnotation
-        fields = ['memory_safety_vulnerability', 'memory_access',
+        fields = ['memory_safety_vulnerability', 'always_crash', 'memory_access',
                   'control_flow_vulnerability', 'undefined_behavior_vulnerability',
                   'approximate_spatial_safety', 'approximate_temporal_safety',
                   'remarks']

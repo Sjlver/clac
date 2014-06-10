@@ -61,6 +61,15 @@
       dereferences, out of bound accesses...
     </p>
   </div>
+  <div id="annotation_always_crash">
+    <p>{{ form.always_crash.label_tag }} {{ form.always_crash }}
+    [y/n/u]</p>
+    <p class="explanation">
+      Will this bug always lead to a crash? If you select <em>no</em>, this means
+      that additional instrumentation, assertions or debugging techniques are
+      needed to discover the bug.
+    </p>
+  </div>
   <div id="annotation_memory_access">
     <p>{{ form.memory_access.label_tag }} {{ form.memory_access }}
     [r/w/u]</p>

@@ -7,6 +7,7 @@ function init_cve_annotation() {
   $( '#annotation_memory_safety_vulnerability .explanation' ).show();
   $( '#annotation_memory_safety_vulnerability select' ).focus();
 
+  $( '#annotation_always_crash' ).hide();
   $( '#annotation_memory_access' ).hide();
   $( '#annotation_control_flow_vulnerability' ).hide();
   $( '#annotation_undefined_behavior_vulnerability' ).hide();
@@ -20,9 +21,10 @@ function init_cve_annotation() {
     }
 
     if (value === 'YES') {
+      $( '#annotation_always_crash' ).show('fast');
+      $( '#annotation_always_crash .explanation' ).show();
+      $( '#annotation_always_crash select' ).focus();
       $( '#annotation_memory_access' ).show('fast');
-      $( '#annotation_memory_access .explanation' ).show();
-      $( '#annotation_memory_access select' ).focus();
       $( '#annotation_control_flow_vulnerability' ).show('fast');
       $( '#annotation_approximate_spatial_safety' ).show('fast');
       $( '#annotation_approximate_temporal_safety' ).show('fast');
@@ -32,6 +34,16 @@ function init_cve_annotation() {
       $( '#annotation_undefined_behavior_vulnerability select' ).focus();
     } else if (value === 'UNKNOWN') {
       $( '#submit_annotation' ).focus();
+    }
+  });
+
+  $( '#annotation_always_crash select' ).change(function() {
+    var value = $( '#annotation_always_crash select' ).val();
+    if (value !== '') {
+      $( '#annotation_always_crash .explanation' ).hide();
+      $( '#annotation_memory_access' ).show('fast');
+      $( '#annotation_memory_access .explanation' ).show();
+      $( '#annotation_memory_access select' ).focus();
     }
   });
 
