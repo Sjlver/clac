@@ -64,3 +64,23 @@ def random_cve(request):
             num_annotations=Count('cveannotation')).order_by(
             'num_annotations', '?')[0]
     return redirect('annotate_cve', cve_id=entry.cve_id)
+
+def summary(request):
+    FIELDS_OF_INTEREST = ['memory_safety_vulnerability', 'always_crash', 'memory_access',
+            'control_flow_vulnerability', 'undefined_behavior_vulnerability',
+            'approximate_spatial_safety', 'approximate_temporal_safety']
+    
+    annotations = CveAnnotation.objects.all()
+    counts = {}
+    for field in FIELDS_OF_INTEREST:
+        counts.setdefault(field, {})
+        field_choices = [c[0] for c in CveAnnotation._meta.get_field(field).choices]
+        for choice in field_choices:
+            field_filter = {field: choice}
+            n = len(annotations.filter(**field_filter))
+            counts[field][choice] = counts[field].get(choice, 0) + n
+                
+    return render(request, 'cves/summary.html', {
+        'annotations': annotations,
+        'counts': counts,
+        })
