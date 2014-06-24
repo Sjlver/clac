@@ -65,6 +65,7 @@ def random_cve(request):
             'num_annotations', '?')[0]
     return redirect('annotate_cve', cve_id=entry.cve_id)
 
+@login_required(login_url=reverse_lazy('login'))
 def summary(request):
     FIELDS_OF_INTEREST = ['memory_safety_vulnerability', 'always_crash', 'memory_access',
             'control_flow_vulnerability', 'undefined_behavior_vulnerability',
