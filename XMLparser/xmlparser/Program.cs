@@ -38,10 +38,8 @@ namespace xmlparser
 
     class Program
     {
-        static void Main( )
-        {//string[] args
-
-            string args = "C:\\Users\\Azqa\\Documents\\Visual Studio 2012\\Projects\\xmlparser\\xmlparser\\nvdcve-2.0-2014.xml"; //path to your xml file
+        static void Main(string[] args)
+        {
             if (args.Length == 0)
             {
                 Console.WriteLine("No input file specified");
@@ -49,7 +47,7 @@ namespace xmlparser
                 return;
             }
 
-            FileStream fs = new FileStream(args, FileMode.Open, FileAccess.Read); //read the file
+            FileStream fs = new FileStream(args[0], FileMode.Open, FileAccess.Read); //read the file
             byte[] data = new byte[fs.Length];
             fs.Read(data, 0, (int)fs.Length);
             fs.Close();
@@ -57,8 +55,7 @@ namespace xmlparser
             HashSet<products> vendor = new HashSet<products>(); //list of products and vendors for each entry
             string strData = Encoding.UTF8.GetString(data);
 
-            // Read a particular key from the config file            
-
+            Console.WriteLine("Connecting to database \"" + ConfigurationManager.AppSettings.Get("server") + "\"...");
 
             string connStr = "server=" + ConfigurationManager.AppSettings.Get("server") +";user=" + ConfigurationManager.AppSettings.Get("user") +";database=" + ConfigurationManager.AppSettings.Get("database") +";port=" + ConfigurationManager.AppSettings.Get("port") +";password=" + ConfigurationManager.AppSettings.Get("password") +";"; //connection string
             MySqlConnection conn = new MySqlConnection(connStr); 
