@@ -5,7 +5,7 @@ from django.forms import ModelForm
 class CveEntry(models.Model):
     AV_CHOICES = (
             ('NETWORK', 'Network'),
-            ('ADJACENT', 'Adjacent Network'),
+            ('ADJACENT_NETWORK', 'Adjacent Network'),
             ('LOCAL', 'Local')
     )
     AC_CHOICES = (
