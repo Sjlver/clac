@@ -1,0 +1,5 @@
+# Compiled files
+bin/
+
+# User-specific configuration
+*.suo
