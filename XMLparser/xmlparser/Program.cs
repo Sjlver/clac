@@ -73,7 +73,7 @@ namespace xmlparser
             }
 
 
-            HashSet<products> vendor = new HashSet<products>(); //list of products and vendors for each entry
+            HashSet<products> productvendor = new HashSet<products>(); //list of products and vendors for each entry
             string strData = Encoding.UTF8.GetString(data);
 
             // Read a particular key from the config file            
@@ -97,33 +97,33 @@ namespace xmlparser
             {
                 Console.WriteLine("Connecting to MySQL...");
                conn.Open();
-
+               Console.WriteLine("Connection Successful. Now attempting to parse and save data in database...");
                 string sql; //query string
                 NanoXMLDocument xml = new NanoXMLDocument(strData);
 
-                foreach (var item in xml.RootNode.SubNodes) //nvd/entry
+                foreach (var entry in xml.RootNode.SubNodes) //nvd/entry
                 {
                     product_id.Clear();
                     cve_entries entries = new cve_entries(); //new object for very entry
-                    entries.entry = item.GetAttribute("id").Value; //entry id= "bla-bla"
+                    entries.entry = entry.GetAttribute("id").Value; //entry id= "bla-bla"
                     //Console.WriteLine("{0} = {1} ", item.Name, entries.entry); 
-                    foreach (var i in item.SubNodes)//nvd/entry/...
+                    foreach (var entry_nodes in entry.SubNodes)//nvd/entry/...
                     {
 
-                        if (i.Name.Equals("vuln:vulnerable-software-list"))
+                        if (entry_nodes.Name.Equals("vuln:vulnerable-software-list"))
                         {
-                            foreach (var i2 in i.SubNodes)//nvd/entry/software-list/product
+                            foreach (var product in entry_nodes.SubNodes)//nvd/entry/software-list/product
                             {
 
                                 //Console.WriteLine("name= {0} ", i2.Value);
-                                string[] vendors = i2.Value.Split(':');
-                                products temp = new products();
-                                temp.vendor = vendors[2]; //vendor name
-                                temp.product = vendors[3]; //product name
+                                string[] vendors = product.Value.Split(':');
+                                products tempproduct = new products();
+                                tempproduct.vendor = vendors[2]; //vendor name
+                                tempproduct.product = vendors[3]; //product name
                                 bool flag = false;
-                                foreach (var i3 in vendor) //checking duplicates for products
+                                foreach (var productrow in productvendor) //checking duplicates for products
                                 {
-                                    if (i3.product == temp.product && i3.vendor == temp.vendor)
+                                    if (productrow.product == tempproduct.product && productrow.vendor == tempproduct.vendor)
                                         flag = true;
 
                                 }
@@ -131,8 +131,8 @@ namespace xmlparser
                                 {
                                     sql = "INSERT INTO products(vendor, product) VALUES (@vendor_val,@product_val);"; //sql query
                                     MySqlCommand insertproduct = new MySqlCommand(sql, conn);
-                                    insertproduct.Parameters.AddWithValue("@vendor_val", temp.vendor);
-                                    insertproduct.Parameters.AddWithValue("@product_val", temp.product);
+                                    insertproduct.Parameters.AddWithValue("@vendor_val", tempproduct.vendor);
+                                    insertproduct.Parameters.AddWithValue("@product_val", tempproduct.product);
                                     try
                                     {
                                         insertproduct.ExecuteScalar();
@@ -145,13 +145,13 @@ namespace xmlparser
                                         return;
 
                                     }
-                                    vendor.Add(temp); // check for duplicates
+                                    productvendor.Add(tempproduct); // check for duplicates
                                     sql = "SELECT product_id FROM products WHERE vendor = @vendor_val AND product = @product_val;";
 
-                                    MySqlCommand m = new MySqlCommand(sql,conn);
-                                    m.Parameters.AddWithValue("@vendor_val", temp.vendor);
-                                    m.Parameters.AddWithValue("@product_val", temp.product);
-                                    int prod_id = Convert.ToInt32(m.ExecuteScalar());
+                                    MySqlCommand cmd = new MySqlCommand(sql,conn);
+                                    cmd.Parameters.AddWithValue("@vendor_val", tempproduct.vendor);
+                                    cmd.Parameters.AddWithValue("@product_val", tempproduct.product);
+                                    int prod_id = Convert.ToInt32(cmd.ExecuteScalar());
                                     if (!product_id.Contains(prod_id))
                                         product_id.Add(prod_id);
                                    
@@ -161,10 +161,10 @@ namespace xmlparser
                                    // sql = "SELECT product_id from products WHERE vendor='" + temp.vendor + "' and product= '" + temp.product + "' ;";
                                     sql = "SELECT product_id FROM products WHERE vendor = @vendor_val AND product = @product_val;";
                                     
-                                    MySqlCommand m = new MySqlCommand(sql,conn);
-                                    m.Parameters.AddWithValue("@vendor_val", temp.vendor);
-                                    m.Parameters.AddWithValue("@product_val", temp.product);
-                                    int prod_id = Convert.ToInt32(m.ExecuteScalar());
+                                    MySqlCommand cmd = new MySqlCommand(sql,conn);
+                                    cmd.Parameters.AddWithValue("@vendor_val", tempproduct.vendor);
+                                    cmd.Parameters.AddWithValue("@product_val", tempproduct.product);
+                                    int prod_id = Convert.ToInt32(cmd.ExecuteScalar());
                                     if (!product_id.Contains(prod_id))
                                                 product_id.Add(prod_id);
                                   
@@ -173,40 +173,40 @@ namespace xmlparser
 
                             }
                         }
-                        if (i.Name.Equals("vuln:summary")) 
+                        if (entry_nodes.Name.Equals("vuln:summary")) 
                         {
-                            entries.summary = i.Value; //summary
+                            entries.summary = entry_nodes.Value; //summary
                             //Console.WriteLine("Summary= {0}", entries.summary); //save in db
                         }
-                        if (i.Name.Equals("vuln:cwe"))
+                        if (entry_nodes.Name.Equals("vuln:cwe"))
                         {
-                            entries.cwe=i.GetAttribute("id").Value; //cwe id
+                            entries.cwe=entry_nodes.GetAttribute("id").Value; //cwe id
                             //Console.WriteLine("cwe= {0}", entries.cwe);
                         }
-                        if (i.Name.Equals("vuln:cvss")) //nvd/entry/cvss/...
+                        if (entry_nodes.Name.Equals("vuln:cvss")) //nvd/entry/cvss/...
                         {
-                            foreach (var i4 in i.SubNodes)
+                            foreach (var cvss_nodes in entry_nodes.SubNodes)
                             {
-                                if (i4.Name.Equals("cvss:base_metrics"))//nvd/entry/cvss/base_metrics
-                                    foreach (var i5 in i4.SubNodes) //nvd/entry/cvss/base_metrics/...
+                                if (cvss_nodes.Name.Equals("cvss:base_metrics"))//nvd/entry/cvss/base_metrics
+                                    foreach (var basemetrics_nodes in cvss_nodes.SubNodes) //nvd/entry/cvss/base_metrics/...
                                     {
-                                        string[] key = i5.Name.Split(':');
+                                        string[] key = basemetrics_nodes.Name.Split(':');
                                         if (key[1] == "score")
-                                            entries.score = i5.Value;
+                                            entries.score = basemetrics_nodes.Value;
                                         else if (key[1] == "access-vector")
-                                            entries.access_vector = i5.Value;
+                                            entries.access_vector = basemetrics_nodes.Value;
                                         else if (key[1] == "access-complexity")
-                                            entries.access_complexity = i5.Value;
+                                            entries.access_complexity = basemetrics_nodes.Value;
                                         else if (key[1] == "authentication")
-                                            entries.authentication = i5.Value;
+                                            entries.authentication = basemetrics_nodes.Value;
                                         else if (key[1] == "confidentiality-impact")
-                                            entries.confidentiality_impact = i5.Value;
+                                            entries.confidentiality_impact = basemetrics_nodes.Value;
                                         else if (key[1] == "integrity-impact")
-                                            entries.integrity_impact = i5.Value;
+                                            entries.integrity_impact = basemetrics_nodes.Value;
                                         else if (key[1] == "availability-impact")
-                                            entries.availablility_impact = i5.Value;
+                                            entries.availablility_impact = basemetrics_nodes.Value;
                                         else if (key[1] == "generated-on-datetime")
-                                            entries.date_created = Convert.ToDateTime(i5.Value); //WRONG VAL
+                                            entries.date_created = Convert.ToDateTime(basemetrics_nodes.Value); //WRONG VAL
                                         //Console.WriteLine("{0} = {1}", key[1], i5.Value); 
                                     }
                             }
