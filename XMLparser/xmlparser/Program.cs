@@ -1,6 +1,6 @@
 ﻿//* XML Parser *//
 /*  Developed By: Azqa Nadeem - Intern @ DSlab
- * Date : 26th Junem 2014 10:52 am */
+ * Date : 26th June 2014 10:52 am */
 
 using System;
 using System.Collections.Generic;
@@ -34,12 +34,21 @@ namespace xmlparser
         public string integrity_impact = null;
         public string availablility_impact = null;
         public string cwe = null;
+        public DateTime date_created;
     }
 
     class Program
     {
+
         static void Main(string[] args)
         {
+
+ 
+            List<int> product_id = new List<int>();
+            int entry_id = 0;
+            string connStr;
+            //string args = "C:\\Users\\Azqa\\Documents\\VisualStudio2012\\Projects\\xmlparser1\\xmlparser\\nvdcve-2.0-2014.xml"; //path to your xml file
+
             if (args.Length == 0)
             {
                 Console.WriteLine("No input file specified");
@@ -47,20 +56,43 @@ namespace xmlparser
                 return;
             }
 
-            FileStream fs = new FileStream(args[0], FileMode.Open, FileAccess.Read); //read the file
-            byte[] data = new byte[fs.Length];
-            fs.Read(data, 0, (int)fs.Length);
-            fs.Close();
+            FileStream fs;
+            byte[] data;
+            try
+            {
+                 fs = new FileStream(args[0], FileMode.Open, FileAccess.Read); //read the file
+                 data = new byte[fs.Length];
+                fs.Read(data, 0, (int)fs.Length);
+                fs.Close();
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Console.WriteLine("XML File Not found. Details:\n" + e.Message);
+                Console.ReadLine();
+                return;
+            }
+
 
             HashSet<products> vendor = new HashSet<products>(); //list of products and vendors for each entry
             string strData = Encoding.UTF8.GetString(data);
 
-            Console.WriteLine("Connecting to database \"" + ConfigurationManager.AppSettings.Get("server") + "\"...");
+            // Read a particular key from the config file            
 
-            string connStr = "server=" + ConfigurationManager.AppSettings.Get("server") +";user=" + ConfigurationManager.AppSettings.Get("user") +";database=" + ConfigurationManager.AppSettings.Get("database") +";port=" + ConfigurationManager.AppSettings.Get("port") +";password=" + ConfigurationManager.AppSettings.Get("password") +";"; //connection string
-            MySqlConnection conn = new MySqlConnection(connStr); 
-            int product_id=0;
-            int entry_id = 0;
+            if ((ConfigurationManager.AppSettings.Get("server").Length <= 0) || (ConfigurationManager.AppSettings.Get("user").Length <= 0) || (ConfigurationManager.AppSettings.Get("database").Length <= 0))
+            {
+                Console.WriteLine("App Config not found...");
+                Console.ReadLine();
+                return;
+            }
+            else if (args[1].Length<=0) //HERE
+            {
+                Console.WriteLine("Password not specified..");
+                Console.ReadLine();
+                return;
+            }
+            connStr = "server=" + ConfigurationManager.AppSettings.Get("server") +";user=" + ConfigurationManager.AppSettings.Get("user") +";database=" + ConfigurationManager.AppSettings.Get("database") +";port=" + ConfigurationManager.AppSettings.Get("port") +";password=" + args[1] +";"; //connection string
+            MySqlConnection conn = new MySqlConnection(connStr);
+
             try
             {
                 Console.WriteLine("Connecting to MySQL...");
@@ -71,65 +103,76 @@ namespace xmlparser
 
                 foreach (var item in xml.RootNode.SubNodes) //nvd/entry
                 {
+                    product_id.Clear();
                     cve_entries entries = new cve_entries(); //new object for very entry
                     entries.entry = item.GetAttribute("id").Value; //entry id= "bla-bla"
                     //Console.WriteLine("{0} = {1} ", item.Name, entries.entry); 
                     foreach (var i in item.SubNodes)//nvd/entry/...
                     {
-                        
+
                         if (i.Name.Equals("vuln:vulnerable-software-list"))
+                        {
                             foreach (var i2 in i.SubNodes)//nvd/entry/software-list/product
                             {
 
                                 //Console.WriteLine("name= {0} ", i2.Value);
-                                string[] vendors = i2.Value.Split(':'); 
+                                string[] vendors = i2.Value.Split(':');
                                 products temp = new products();
                                 temp.vendor = vendors[2]; //vendor name
                                 temp.product = vendors[3]; //product name
                                 bool flag = false;
                                 foreach (var i3 in vendor) //checking duplicates for products
                                 {
-                                    if (i3.product == temp.product && i3.vendor == temp.vendor) 
+                                    if (i3.product == temp.product && i3.vendor == temp.vendor)
                                         flag = true;
 
                                 }
                                 if (!flag) //if instance not found, then try storing in database
                                 {
-                                    sql = "INSERT INTO products(vendor, product) VALUES ('" + temp.vendor + "','" + temp.product + "');"; //sql query
-                                    MySqlScript script = new MySqlScript(conn, sql);
-                                    script.Error += new MySqlScriptErrorEventHandler(script_Error);
-                                    script.ScriptCompleted += new EventHandler(script_ScriptCompleted);
-                                    script.StatementExecuted += new MySqlStatementExecutedEventHandler(script_StatementExecuted);
-                                    int count = script.Execute(); //execute query
-                                    
-                                    sql = "SELECT product_id from products ORDER BY product_id DESC LIMIT 1"; //get the id of newly created row
-                                    MySqlCommand cmd = new MySqlCommand(sql, conn);
-
-                                    MySqlDataReader reader = cmd.ExecuteReader();
-                                    while (reader.Read())
+                                    sql = "INSERT INTO products(vendor, product) VALUES (@vendor_val,@product_val);"; //sql query
+                                    MySqlCommand insertproduct = new MySqlCommand(sql, conn);
+                                    insertproduct.Parameters.AddWithValue("@vendor_val", temp.vendor);
+                                    insertproduct.Parameters.AddWithValue("@product_val", temp.product);
+                                    try
                                     {
-                                        product_id = reader.GetInt16("product_id"); //store in product_id
+                                        insertproduct.ExecuteScalar();
+                                        
                                     }
-                                    reader.Close();
+                                    catch (MySqlException e)
+                                    {
+                                        Console.WriteLine("Error inserting row in Products Table: \n{0} - ", e.Message);
+                                        Console.ReadLine();
+                                        return;
 
+                                    }
+                                    vendor.Add(temp); // check for duplicates
+                                    sql = "SELECT product_id FROM products WHERE vendor = @vendor_val AND product = @product_val;";
 
-                                    vendor.Add(temp); //add to list to check for duplications
+                                    MySqlCommand m = new MySqlCommand(sql,conn);
+                                    m.Parameters.AddWithValue("@vendor_val", temp.vendor);
+                                    m.Parameters.AddWithValue("@product_val", temp.product);
+                                    int prod_id = Convert.ToInt32(m.ExecuteScalar());
+                                    if (!product_id.Contains(prod_id))
+                                        product_id.Add(prod_id);
+                                   
                                 }
                                 else //if instance is found,
                                 {
-                                    sql = "SELECT product_id from products WHERE vendor='"+temp.vendor+"' and product= '"+temp.product+"' ;";
-                                    MySqlCommand cmd = new MySqlCommand(sql, conn);
-
-                                    MySqlDataReader reader = cmd.ExecuteReader();
-                                    while (reader.Read())
-                                    {
-                                        product_id = reader.GetInt16("product_id"); //try looking for its id
-                                    }
-                                    reader.Close();
+                                   // sql = "SELECT product_id from products WHERE vendor='" + temp.vendor + "' and product= '" + temp.product + "' ;";
+                                    sql = "SELECT product_id FROM products WHERE vendor = @vendor_val AND product = @product_val;";
+                                    
+                                    MySqlCommand m = new MySqlCommand(sql,conn);
+                                    m.Parameters.AddWithValue("@vendor_val", temp.vendor);
+                                    m.Parameters.AddWithValue("@product_val", temp.product);
+                                    int prod_id = Convert.ToInt32(m.ExecuteScalar());
+                                    if (!product_id.Contains(prod_id))
+                                                product_id.Add(prod_id);
+                                  
 
                                 }
-                                
+
                             }
+                        }
                         if (i.Name.Equals("vuln:summary")) 
                         {
                             entries.summary = i.Value; //summary
@@ -141,14 +184,16 @@ namespace xmlparser
                             //Console.WriteLine("cwe= {0}", entries.cwe);
                         }
                         if (i.Name.Equals("vuln:cvss")) //nvd/entry/cvss/...
-                            foreach(var i4 in i.SubNodes)
+                        {
+                            foreach (var i4 in i.SubNodes)
+                            {
                                 if (i4.Name.Equals("cvss:base_metrics"))//nvd/entry/cvss/base_metrics
                                     foreach (var i5 in i4.SubNodes) //nvd/entry/cvss/base_metrics/...
                                     {
                                         string[] key = i5.Name.Split(':');
                                         if (key[1] == "score")
-                                            entries.score = i5.Value; 
-                                        else if (key[1]== "access-vector")
+                                            entries.score = i5.Value;
+                                        else if (key[1] == "access-vector")
                                             entries.access_vector = i5.Value;
                                         else if (key[1] == "access-complexity")
                                             entries.access_complexity = i5.Value;
@@ -160,8 +205,12 @@ namespace xmlparser
                                             entries.integrity_impact = i5.Value;
                                         else if (key[1] == "availability-impact")
                                             entries.availablility_impact = i5.Value;
+                                        else if (key[1] == "generated-on-datetime")
+                                            entries.date_created = Convert.ToDateTime(i5.Value); //WRONG VAL
                                         //Console.WriteLine("{0} = {1}", key[1], i5.Value); 
                                     }
+                            }
+                        }
 
 
                     }
@@ -171,59 +220,76 @@ namespace xmlparser
                     //    entries.score, entries.summary);
                     sql = "INSERT INTO cve_entries(entry, cwe, summary, score, access_complexity,"+
                     "access_vector, authentication, availability_impact, confidentiality_impact,"+
-                    "integrity_impact) VALUES ('"+entries.entry+"','"+entries.cwe+"','"+entries.summary+"',"+
-                    entries.score+",'"+entries.access_complexity+"','"+entries.access_vector+"','"+
-                    entries.authentication+"','"+entries.availablility_impact+"','"+
-                    entries.confidentiality_impact+"','"+entries.integrity_impact+"');"; //store all info regarding one entry to database
+                    "integrity_impact, date_created) VALUES (@entry,@cwe,@summary,@score,@ac,@av,@authentication,@ai,@ci,@ii,@date);"; //store all info regarding one entry to database
 
-                    MySqlScript script1 = new MySqlScript(conn, sql);
-                    script1.Error += new MySqlScriptErrorEventHandler(script_Error);
-                    script1.ScriptCompleted += new EventHandler(script_ScriptCompleted);
-                    script1.StatementExecuted += new MySqlStatementExecutedEventHandler(script_StatementExecuted);
-                    int count1 = script1.Execute(); //execute the query
-                    sql = "SELECT entry_id from cve_entries ORDER BY entry_id DESC LIMIT 1";
-                    
-                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
-                    MySqlDataReader reader1 = cmd1.ExecuteReader();
-                    while (reader1.Read())
+                    MySqlCommand insertentry = new MySqlCommand(sql, conn);
+                    insertentry.Parameters.AddWithValue("@entry",entries.entry );
+                    insertentry.Parameters.AddWithValue("@cwe", entries.cwe);
+                    insertentry.Parameters.AddWithValue("@summary", entries.summary);
+                    insertentry.Parameters.AddWithValue("@score", entries.score);
+                    insertentry.Parameters.AddWithValue("@ac", entries.access_complexity);
+                    insertentry.Parameters.AddWithValue("@av", entries.access_vector);
+                    insertentry.Parameters.AddWithValue("@authentication", entries.authentication);
+                    insertentry.Parameters.AddWithValue("@ai", entries.availablility_impact);
+                    insertentry.Parameters.AddWithValue("@ci", entries.confidentiality_impact);
+                    insertentry.Parameters.AddWithValue("@ii", entries.integrity_impact);
+                    insertentry.Parameters.AddWithValue("@date", entries.date_created);
+                   
+
+                    try
                     {
-                        entry_id = reader1.GetInt16("entry_id"); //read the entry_id of the newly created entry
+                        insertentry.ExecuteScalar();
+
                     }
-                    reader1.Close();
-                    
-                    sql = "INSERT INTO product_entries (product_id, entry_id) VALUES ('" + product_id + "','" + entry_id + "');";
-                    MySqlScript script3 = new MySqlScript(conn, sql);
-                    script3.Error += new MySqlScriptErrorEventHandler(script_Error);
-                    script3.ScriptCompleted += new EventHandler(script_ScriptCompleted);
-                    script3.StatementExecuted += new MySqlStatementExecutedEventHandler(script_StatementExecuted);
-                    int count3 = script3.Execute(); //query to store info in bridge entity
+                    catch (MySqlException e)
+                    {
+                        Console.WriteLine("Error inserting row in cve_entries Table: \n{0}", e.Message);
+                        Console.ReadLine();
+                        return;
+
+                    }
+
+                    sql = "SELECT entry_id FROM cve_entries WHERE entry = @entry_val ;";
+
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    cmd1.Parameters.AddWithValue("@entry_val", entries.entry);
+                    entry_id = Convert.ToInt32(cmd1.ExecuteScalar());
+
+               
+                    foreach (var prod in product_id)
+                    {
+                        sql = "INSERT INTO product_entries (product_id, entry_id) VALUES (@prod,@entry);";
+                        MySqlCommand insertprodentry = new MySqlCommand(sql, conn);
+                        insertprodentry.Parameters.AddWithValue("@entry", entry_id);
+                        insertprodentry.Parameters.AddWithValue("@prod", prod);
+
+
+                        try
+                        {
+                            insertprodentry.ExecuteScalar();
+                            //execute query
+                        }
+                        catch (MySqlException e)
+                        {
+                            Console.WriteLine("Error inserting row in product_entries Table: \n{0} ", e.Message);
+                            Console.ReadLine();
+                            return;
+                        }
+                    }
                 }
             }
             catch (XMLParsingException e)
             {
                 Console.WriteLine("XML Parsing error: {0}", e.Message);
+                Console.ReadLine();
+
+                return;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("General exception: [{0}]{1}", e.GetType().Name, e.Message);
-            }
+            Console.WriteLine("Task Completed!!");
             Console.ReadLine();
         }
-        static void script_StatementExecuted(object sender, MySqlScriptEventArgs args)
-        {
-            Console.WriteLine("script_StatementExecuted");
-        }
-
-        static void script_ScriptCompleted(object sender, EventArgs e)
-        {
-            /// EventArgs e will be EventArgs.Empty for this method 
-            Console.WriteLine("script_ScriptCompleted!");
-        }
-
-        static void script_Error(Object sender, MySqlScriptErrorEventArgs args)
-        {
-            Console.WriteLine("script_Error: " + args.Exception.ToString());
-        }
+       
     }
+
 
 }
