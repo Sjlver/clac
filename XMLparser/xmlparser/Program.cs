@@ -201,26 +201,23 @@
 
            
 
-            try
-            {
-               conn.Open();
-               Console.WriteLine("Connection Successful. Now attempting to parse and save data in database...");
-                NanoXMLDocument xml = new NanoXMLDocument(str_data);
-                 Console.WriteLine("Connecting to MySQL server at " +
-                    ConfigurationManager.AppSettings.Get("server") +
-                    ":" + ConfigurationManager.AppSettings.Get("port") + "...");
-            Console.WriteLine("Using " +
-                    ConfigurationManager.AppSettings.Get("user") + "@" +
-                    ConfigurationManager.AppSettings.Get("database") + ".");
-            conn_str = "server=" + ConfigurationManager.AppSettings.Get("server") +";user=" +
-                ConfigurationManager.AppSettings.Get("user") +";database=" +
-                ConfigurationManager.AppSettings.Get("database") +";port=" +
-                ConfigurationManager.AppSettings.Get("port") +";password=" + args[1] +";"; //connection string
-            MySqlConnection conn = new MySqlConnection(conn_str);
+          
+                 
 
                 try
                 {
-                    Console.WriteLine("Connecting to MySQL...");
+                    Console.WriteLine("Connecting to MySQL server at " +
+                    ConfigurationManager.AppSettings.Get("server") +
+                    ":" + ConfigurationManager.AppSettings.Get("port") + "...");
+                    Console.WriteLine("Using " +
+                        ConfigurationManager.AppSettings.Get("user") + "@" +
+                        ConfigurationManager.AppSettings.Get("database") + ".");
+                     conn_Str = "server=" + ConfigurationManager.AppSettings.Get("server") + ";user=" +
+                        ConfigurationManager.AppSettings.Get("user") + ";database=" +
+                        ConfigurationManager.AppSettings.Get("database") + ";port=" +
+                        ConfigurationManager.AppSettings.Get("port") + ";password=" + args[1] + ";"; //connection string
+                    MySqlConnection conn = new MySqlConnection(conn_Str);
+
                     conn.Open();
                     Console.WriteLine("Connection Successful. Now attempting to parse and save data in database...");
                     NanoXMLDocument xml = new NanoXMLDocument(str_Data);
@@ -319,6 +316,7 @@
             }
        
         }
+            
 
     }
 
