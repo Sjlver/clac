@@ -19,18 +19,22 @@ namespace XmlParser
     // Product is a structure to store vendors and products info.
     class Product
     {
+        // FIXME: this should be "Vendor", not "vendor", because public
+        // instance attributes and properties start with capital letters in C#
+        // (like Array.Length, for example).
+        // Similar for other classes.
         public string vendor;
         public string product;
 
         public bool Save(MySqlConnection conn)
         {
             string sql = "INSERT INTO products(vendor, product) VALUES (@vendor_val,@product_val);";
-            MySqlCommand insert_Product = new MySqlCommand(sql, conn);
-            insert_Product.Parameters.AddWithValue("@vendor_val", vendor);
-            insert_Product.Parameters.AddWithValue("@product_val", product);
+            MySqlCommand insertProduct = new MySqlCommand(sql, conn);
+            insertProduct.Parameters.AddWithValue("@vendor_val", vendor);
+            insertProduct.Parameters.AddWithValue("@product_val", product);
             try
             {
-                insert_Product.ExecuteScalar();
+                insertProduct.ExecuteScalar();
             }
             catch (MySqlException e)
             {
@@ -83,6 +87,8 @@ namespace XmlParser
     // Stores info about a CVE vulnerability
     class CveEntry
     {
+        // FIXME: Please remove underscores in attribute names, e.g.,
+        // access_Vector -> AccessVector
         public string entry = null;
         public string summary = null;
         public string score = null;
@@ -105,24 +111,27 @@ namespace XmlParser
             "integrity_impact, date_created, published_date, last_modified) VALUES (@entry,@cwe,@summary,"+
             "@score,@ac,@av,@authentication,@ai,@ci,@ii,@date_created,@date_pub,@last_mod);";
 
-            MySqlCommand insert_Entry = new MySqlCommand(sql, conn);
-            insert_Entry.Parameters.AddWithValue("@entry",entry );
-            insert_Entry.Parameters.AddWithValue("@cwe", cwe);
-            insert_Entry.Parameters.AddWithValue("@summary",  summary);
-            insert_Entry.Parameters.AddWithValue("@score",  score);
-            insert_Entry.Parameters.AddWithValue("@ac",  access_Complexity);
-            insert_Entry.Parameters.AddWithValue("@av",  access_Vector);
-            insert_Entry.Parameters.AddWithValue("@authentication",  authentication);
-            insert_Entry.Parameters.AddWithValue("@ai",  availablility_Impact);
-            insert_Entry.Parameters.AddWithValue("@ci",  confidentiality_Impact);
-            insert_Entry.Parameters.AddWithValue("@ii",  integrity_Impact);
-            insert_Entry.Parameters.AddWithValue("@date_created",  date_Created);
-            insert_Entry.Parameters.AddWithValue("@date_pub",  date_Published);
-            insert_Entry.Parameters.AddWithValue("@last_mod",  last_Modified);
+            MySqlCommand insertEntry = new MySqlCommand(sql, conn);
+            insertEntry.Parameters.AddWithValue("@entry",entry );
+            insertEntry.Parameters.AddWithValue("@cwe", cwe);
+            insertEntry.Parameters.AddWithValue("@summary",  summary);
+            insertEntry.Parameters.AddWithValue("@score",  score);
+            insertEntry.Parameters.AddWithValue("@ac",  access_Complexity);
+            insertEntry.Parameters.AddWithValue("@av",  access_Vector);
+            insertEntry.Parameters.AddWithValue("@authentication",  authentication);
+            insertEntry.Parameters.AddWithValue("@ai",  availablility_Impact);
+            insertEntry.Parameters.AddWithValue("@ci",  confidentiality_Impact);
+            insertEntry.Parameters.AddWithValue("@ii",  integrity_Impact);
+            insertEntry.Parameters.AddWithValue("@date_created",  date_Created);
+            insertEntry.Parameters.AddWithValue("@date_pub",  date_Published);
+            insertEntry.Parameters.AddWithValue("@last_mod",  last_Modified);
 
+            // FIXME: Does this handle duplicate entries correctly? The goal is
+            // to run this daily using the newest XML file, so it shoudl ignore
+            // duplicates.
             try
             {
-                insert_Entry.ExecuteScalar();
+                insertEntry.ExecuteScalar();
             }
             catch (MySqlException e)
             {
