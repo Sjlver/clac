@@ -11,7 +11,7 @@
       <cvss:base_metrics>
         <cvss:score>7.5</cvss:score>
         <cvss:access-vector>NETWORK</cvss:access-vector>
-        <cvss:access-complexity>LOW</cvss:access-complexity>
+        <cvss:access-complexity>LOW</cvss:access-complexity> 
         <cvss:authentication>NONE</cvss:authentication>
         <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
         <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
@@ -19,7 +19,7 @@
         <cvss:generated-on-datetime>2014-02-03T11:10:48.857-05:00</cvss:generated-on-datetime>
       </cvss:base_metrics>
     </vuln:cvss>
-    <vuln:cwe id="CWE-119"/>
+    <vuln:cwe id=""/> <!-- MISSING CWE ID-->
     <vuln:references xml:lang="en" reference_type="PATCH">
       <vuln:source></vuln:source>
       <vuln:reference href="http://bazaar.launchpad.net/~maria-captains/maria/5.5/revision/2502.565.64" xml:lang="en">http://bazaar.launchpad.net/~maria-captains/maria/5.5/revision/2502.565.64</vuln:reference>

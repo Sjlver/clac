@@ -14,6 +14,7 @@ using System.Xml;
 using System;
 using TObject.Shared;
 
+
 namespace XmlParser
 {
     // Product is a structure to store vendors and products info.
@@ -25,6 +26,7 @@ namespace XmlParser
 
         public bool Save(MySqlConnection conn)
         {
+            const int MYSQL_ERROR_DUPLICATE_ENTRY = 1062;
             string sql = "INSERT INTO products(vendor, product) VALUES (@vendorval,@productval);";
             MySqlCommand insertProduct = new MySqlCommand(sql, conn);
             insertProduct.Parameters.AddWithValue("@vendorval", VendorName);
@@ -35,10 +37,10 @@ namespace XmlParser
             }
             catch (MySqlException e)
             {
-                if (e.Number != 1062)
+                if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                 {
-                    Console.WriteLine("Error inserting row in Products Table: \n{0}", e.Message);
-                    return false;
+                    throw new Exception("Error inserting row in Products Table: \n"+ e.Message);
+                    //return false;
                 }
             }
             return true;
@@ -62,6 +64,8 @@ namespace XmlParser
 
         public bool Save(MySqlConnection conn)
         {
+            const int MYSQL_ERROR_DUPLICATE_ENTRY = 1062;
+
             foreach (var product in ProductIds)
             {
                 string sql = "INSERT INTO product_entries (product_id, entry_id) VALUES (@prod,@entry);";
@@ -76,9 +80,9 @@ namespace XmlParser
                 }
                 catch (MySqlException e)
                 {
-                    if (e.Number != 1062)
+                    if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                     {
-                        Console.WriteLine("Error inserting row in product_entries Table: \n{0} ", e.Message);
+                        throw new Exception("Error inserting row in product_entries Table: \n "+ e.Message);
                         return false;
                     }
                 }
@@ -107,6 +111,8 @@ namespace XmlParser
 
         public bool Save(MySqlConnection conn)
         {
+            const int MYSQL_ERROR_DUPLICATE_ENTRY = 1062;
+
             //store all info regarding one entry to database
             string sql = "INSERT INTO cve_entries(entry, cwe, summary, score, access_complexity,"+
             "access_vector, authentication, availability_impact, confidentiality_impact,"+
@@ -134,10 +140,10 @@ namespace XmlParser
             }
             catch (MySqlException e)
             {
-                if (e.Number != 1062)
+                if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                 {
-                    Console.WriteLine("Error inserting row in cveentries Table: \n{0}", e.Message);
-                    return false;
+                    throw new Exception("Error inserting row in cveentries Table: \n"+ e.Message);
+                    //return false;
                 }
             }
             return true;
@@ -168,7 +174,7 @@ namespace XmlParser
             }
             catch (DirectoryNotFoundException e)
             {
-                Console.WriteLine("XML File Not found. Details:\n" + e.Message);
+                throw new Exception("XML File Not found. Details:\n" + e.Message);
                 return null;
             }
             return data;
@@ -180,7 +186,7 @@ namespace XmlParser
                 (ConfigurationManager.AppSettings.Get("user").Length <= 0) ||
                 (ConfigurationManager.AppSettings.Get("database").Length <= 0))
             {
-                Console.WriteLine("App Config not found...");
+                throw new Exception("App Config not found...");
                 return false;
             }
             return true;
@@ -190,7 +196,7 @@ namespace XmlParser
         {
             if (args.Length < 2 )
             {
-                Console.WriteLine("usage: Program.exe <Path\\to\\XML\\File.xml> <database password>");
+                throw new Exception("usage: Program.exe <Path\\to\\XML\\File.xml> <database password>");
                 return -1;
             }
 
@@ -199,7 +205,7 @@ namespace XmlParser
 
             else if (args[1] == null)
             {
-                Console.WriteLine("Password not specified..");
+                throw new Exception("Password not specified..");
                 return -1;
             }
 
@@ -308,7 +314,7 @@ namespace XmlParser
             }
             catch (XMLParsingException e)
             {
-                Console.WriteLine("XML Parsing error: {0}", e.Message);
+                throw new Exception("XML Parsing error: "+ e.Message);
                 return -1;
             }
             Console.WriteLine("Task Completed!!");

@@ -11,7 +11,7 @@
       <cvss:base_metrics>
         <cvss:score>7.5</cvss:score>
         <cvss:access-vector>NETWORK</cvss:access-vector>
-        <cvss:access-complexity></cvss:access-complexity>
+        <cvss:access-complexity></cvss:access-complexity> <!-- MISSING VALUE -->
         <cvss:authentication>NONE</cvss:authentication>
         <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
         <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>

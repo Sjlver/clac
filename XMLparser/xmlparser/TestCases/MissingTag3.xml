@@ -8,7 +8,7 @@
     <vuln:published-datetime>2014-01-31T18:55:04.503-05:00</vuln:published-datetime>
     <vuln:last-modified-datetime>2014-05-05T01:31:23.107-04:00</vuln:last-modified-datetime>
     <vuln:cvss>
-      <cvss:base_metrics>
+      <cvss:base_metrics> <!-- MISSING SCORE TAG -->
         <cvss:access-vector>NETWORK</cvss:access-vector>
         <cvss:access-complexity>LOW</cvss:access-complexity>
         <cvss:authentication>NONE</cvss:authentication>

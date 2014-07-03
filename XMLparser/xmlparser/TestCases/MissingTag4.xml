@@ -1,6 +1,5 @@
 <nvd xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" nvd_xml_version="2.0" pub_date="2014-06-24T03:00:00" xsi:schemaLocation="http://scap.nist.gov/schema/patch/0.1 http://nvd.nist.gov/schema/patch_0.1.xsd http://scap.nist.gov/schema/scap-core/0.1 http://nvd.nist.gov/schema/scap-core_0.1.xsd http://scap.nist.gov/schema/feed/vulnerability/2.0 http://nvd.nist.gov/schema/nvd-cve-feed_2.0.xsd">
-  <entry id="CVE-2014-0001">
-    
+  <entry id="CVE-2014-0001"> <!-- MISSING SOFTWARE LIST -->
     <vuln:cve-id>CVE-2014-0001</vuln:cve-id>
     <vuln:published-datetime>2014-01-31T18:55:04.503-05:00</vuln:published-datetime>
     <vuln:last-modified-datetime>2014-05-05T01:31:23.107-04:00</vuln:last-modified-datetime>

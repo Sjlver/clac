@@ -14,7 +14,7 @@
         <cvss:access-complexity>LOW</cvss:access-complexity>
         <cvss:authentication>NONE</cvss:authentication>
         <cvss:confidentiality-impact>PARTIAL</cvss:confidentiality-impact>
-        
+        <!-- MISSING INTEGRITY IMPACT-->
         <cvss:availability-impact>PARTIAL</cvss:availability-impact>
         <cvss:generated-on-datetime>2014-02-03T11:10:48.857-05:00</cvss:generated-on-datetime>
       </cvss:base_metrics>

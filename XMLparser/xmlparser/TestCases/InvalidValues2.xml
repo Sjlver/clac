@@ -13,7 +13,7 @@
         <cvss:access-vector>NETWORK</cvss:access-vector>
         <cvss:access-complexity>LOW</cvss:access-complexity>
         <cvss:authentication>NONE</cvss:authentication>
-        <cvss:confidentiality-impact>partia</cvss:confidentiality-impact>
+        <cvss:confidentiality-impact>partia</cvss:confidentiality-impact> <!--INVALID VALUE INSTEAD OF PARTIAL-->
         <cvss:integrity-impact>PARTIAL</cvss:integrity-impact>
         <cvss:availability-impact>PARTIAL</cvss:availability-impact>
         <cvss:generated-on-datetime>2014-02-03T11:10:48.857-05:00</cvss:generated-on-datetime>

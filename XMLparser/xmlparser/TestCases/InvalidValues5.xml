@@ -1,7 +1,7 @@
 <nvd xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:patch="http://scap.nist.gov/schema/patch/0.1" xmlns="http://scap.nist.gov/schema/feed/vulnerability/2.0" xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" nvd_xml_version="2.0" pub_date="2014-06-24T03:00:00" xsi:schemaLocation="http://scap.nist.gov/schema/patch/0.1 http://nvd.nist.gov/schema/patch_0.1.xsd http://scap.nist.gov/schema/scap-core/0.1 http://nvd.nist.gov/schema/scap-core_0.1.xsd http://scap.nist.gov/schema/feed/vulnerability/2.0 http://nvd.nist.gov/schema/nvd-cve-feed_2.0.xsd">
   <entry id="CVE-2014-0010">
     <vuln:vulnerable-software-list>
-      <vuln:product>cpe:/a:same:same:5.5.34</vuln:product>
+      <vuln:product>cpe:/a:same:same:5.5.34</vuln:product> <!--SAME PRODUCT NAMES FOR 2 ENTRIES-->
       <vuln:product>cpe:/a:same:same:-</vuln:product>
     </vuln:vulnerable-software-list>
     <vuln:cve-id>CVE-2014-0001</vuln:cve-id>

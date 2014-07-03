@@ -9,7 +9,7 @@
     <vuln:last-modified-datetime>2014-05-05T01:31:23.107-04:00</vuln:last-modified-datetime>
     <vuln:cvss>
       <cvss:base_metrics>
-        <cvss:score>a7</cvss:score>
+        <cvss:score>a7</cvss:score> <!--INVALID SCORE VALUE. -->
         <cvss:access-vector>NETWORK</cvss:access-vector>
         <cvss:access-complexity>LOW</cvss:access-complexity>
         <cvss:authentication>NONE</cvss:authentication>
