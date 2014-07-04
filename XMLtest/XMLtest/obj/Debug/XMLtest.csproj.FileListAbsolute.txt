@@ -1,0 +1,16 @@
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\XMLtest.dll.config
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\XMLtest.dll
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\XMLtest.pdb
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\MySql.Data.dll
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\XML.dll
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\bin\Debug\XML.pdb
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\obj\Debug\XMLtest.dll
+C:\Users\Azqa\Documents\Visual Studio 2012\Projects\XMLtest\XMLtest\obj\Debug\XMLtest.pdb
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\bin\Debug\XMLtest.dll.config
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\bin\Debug\XMLtest.dll
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\bin\Debug\XMLtest.pdb
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\bin\Debug\MySql.Data.dll
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\bin\Debug\XML.pdb
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\obj\Debug\XMLtest.csprojResolveAssemblyReference.cache
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\obj\Debug\XMLtest.dll
+C:\Users\Azqa\Documents\GitHub\clac\XMLtest\XMLtest\obj\Debug\XMLtest.pdb

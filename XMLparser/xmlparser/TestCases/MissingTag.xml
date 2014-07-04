@@ -5,8 +5,8 @@
       <vuln:product>cpe:/a:oracle:mysql:-</vuln:product>
     </vuln:vulnerable-software-list>
     <vuln:cve-id>CVE-2014-0001</vuln:cve-id>
-    <!--MISSING PUBLISHED DATE-->
-    <vuln:last-modified-datetime>2014-05-05T01:31:23.107-04:00</vuln:last-modified-datetime>
+    <vuln:published-datetime>2014-01-31T18:55:04.503-05:00</vuln:published-datetime>
+    <!--MISSING LAST MODIFIED DATE-->
     <vuln:cvss>
       <cvss:base_metrics>
         <cvss:score>7.5</cvss:score>

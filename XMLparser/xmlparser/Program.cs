@@ -1,24 +1,14 @@
-﻿//* XML Parser *//
-/*  Developed By: Azqa Nadeem - Intern @ DSlab
- *  Date : 30th June 2014 2:44 pm */
-
-using MySql.Data.MySqlClient;
-using MySql.Data;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Xml;
-using System;
-using TObject.Shared;
 
-
-namespace XmlParser
+namespace XMLParser
 {
     // Product is a structure to store vendors and products info.
-    class Product
+     class Product
     {
 
         public string VendorName;
@@ -39,8 +29,7 @@ namespace XmlParser
             {
                 if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                 {
-                    throw new Exception("Error inserting row in Products Table: \n"+ e.Message);
-                    //return false;
+                    throw e;
                 }
             }
             return true;
@@ -57,7 +46,7 @@ namespace XmlParser
     }
 
     // Structure to link a vulnerability to a product
-    class ProductEntry
+     class ProductEntry
     {
         public HashSet<int> ProductIds = new HashSet<int>();
         public int EntryId;
@@ -82,8 +71,8 @@ namespace XmlParser
                 {
                     if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                     {
-                        throw new Exception("Error inserting row in product_entries Table: \n "+ e.Message);
-                        return false;
+                       
+                        throw e;
                     }
                 }
             }
@@ -92,7 +81,7 @@ namespace XmlParser
     }
 
     // Stores info about a CVE vulnerability
-    class CveEntry
+     class CveEntry
     {
        
         public string Entry = null;
@@ -142,7 +131,8 @@ namespace XmlParser
             {
                 if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
                 {
-                    throw new Exception("Error inserting row in cveentries Table: \n"+ e.Message);
+                    //throw new Exception("Error inserting row in cveentries Table: \n"+ e.Message);
+                    throw e;
                     //return false;
                 }
             }
@@ -158,12 +148,12 @@ namespace XmlParser
         }
     }
 
-    class Program
+    public class XMLparser
     {
         public static byte[] LoadXml(string args)
         {
             FileStream fs;
-            byte[] data;
+            byte[] data=null;
             try
             {
                 // read the file
@@ -172,10 +162,9 @@ namespace XmlParser
                 fs.Read(data, 0, (int)fs.Length);
                 fs.Close();
             }
-            catch (DirectoryNotFoundException e)
+            catch (FileNotFoundException e)
             {
-                throw new Exception("XML File Not found. Details:\n" + e.Message);
-                return null;
+               throw e;
             }
             return data;
         }
@@ -184,29 +173,27 @@ namespace XmlParser
         {
             if ((ConfigurationManager.AppSettings.Get("server").Length <= 0) ||
                 (ConfigurationManager.AppSettings.Get("user").Length <= 0) ||
-                (ConfigurationManager.AppSettings.Get("database").Length <= 0))
+                (ConfigurationManager.AppSettings.Get("database").Length <= 0) ||
+                (ConfigurationManager.AppSettings.Get("port").Length !=4))
             {
-                throw new Exception("App Config not found...");
-                return false;
+                throw new ConfigurationErrorsException();
             }
             return true;
         }
 
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             if (args.Length < 2 )
             {
-                throw new Exception("usage: Program.exe <Path\\to\\XML\\File.xml> <database password>");
-                return -1;
+                throw new FormatException("usage: Program.exe <Path\\to\\XML\\File.xml> <database password>");
             }
 
             if (!ReadAppConfig())
                 return -1;
 
-            else if (args[1] == null)
+            else if (args[1] == null || args[1].Length<=1)
             {
-                throw new Exception("Password not specified..");
-                return -1;
+                throw new MissingFieldException("Password not specified..");
             }
 
                         
@@ -239,12 +226,13 @@ namespace XmlParser
                 {
                     ProductEntry productEntry = new ProductEntry();
                     CveEntry cveEntry = new CveEntry(); //new object for very entry
-                    cveEntry.Entry = entryNode.GetAttribute("id").Value; //entry id= "bla-bla"
+                    if(entryNode.GetAttribute("id") !=null)
+                        cveEntry.Entry = entryNode.GetAttribute("id").Value; //entry id= "bla-bla"
                     foreach (var entrySubNode in entryNode.SubNodes) //nvd/entry/...
                     {
                         if (entrySubNode.Name.Equals("vuln:published-datetime"))
                         {
-                            cveEntry.DatePublished = Convert.ToDateTime(entrySubNode.Value);
+                                cveEntry.DatePublished = Convert.ToDateTime(entrySubNode.Value);
                         }
                         else if (entrySubNode.Name.Equals("vuln:last-modified-datetime"))
                         {
@@ -314,12 +302,13 @@ namespace XmlParser
             }
             catch (XMLParsingException e)
             {
-                throw new Exception("XML Parsing error: "+ e.Message);
-                return -1;
+                throw e;
             }
             Console.WriteLine("Task Completed!!");
 
             return 0;
         }
-    }
+    
+}
+
 }

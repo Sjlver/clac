@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TObject.Shared
+namespace XMLParser
 {
   /// <summary>
   /// Base class containing usefull features for all XML classes
@@ -305,7 +305,7 @@ namespace TObject.Shared
     }
   }
 
-  class XMLParsingException: Exception
+  public class XMLParsingException: Exception
   {
     public XMLParsingException(string message) : base(message)
     {
