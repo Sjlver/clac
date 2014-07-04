@@ -1,7 +1,0 @@
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\bin\Debug\xmlparser.exe.config
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\bin\Debug\xmlparser.exe
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\bin\Debug\xmlparser.pdb
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\bin\Debug\MySql.Data.dll
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\obj\Debug\xmlparser.csprojResolveAssemblyReference.cache
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\obj\Debug\xmlparser.exe
-C:\Users\Azqa\Documents\GitHub\clac\XMLparser\xmlparser\obj\Debug\xmlparser.pdb

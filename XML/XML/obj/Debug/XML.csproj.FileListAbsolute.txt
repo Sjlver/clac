@@ -1,7 +1,0 @@
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\bin\Debug\XML.dll
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\bin\Debug\XML.pdb
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\obj\Debug\XML.csprojResolveAssemblyReference.cache
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\obj\Debug\XML.dll
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\obj\Debug\XML.pdb
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\bin\Debug\MySql.Data.dll
-c:\users\azqa\documents\visual studio 2012\Projects\XML\XML\bin\Debug\XML.dll.config

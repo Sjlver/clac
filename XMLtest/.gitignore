@@ -4,3 +4,6 @@ obj/
 
 # User-specific configuration
 *.suo
+
+# Visual studio test results
+TestResults/
