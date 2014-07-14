@@ -1,6 +1,7 @@
 # Compiled files
 bin/
 obj/
+TestResults/
 
 # User-specific configuration
 *.suo

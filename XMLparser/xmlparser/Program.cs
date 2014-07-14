@@ -7,6 +7,36 @@ using System.Text;
 
 namespace XMLParser
 {
+
+    class Reference
+    {
+        public string href;
+        public int? entry_id;
+
+        public bool Save(MySqlConnection conn)
+        {
+            const int MYSQL_ERROR_DUPLICATE_ENTRY = 1062;
+            string sql = "INSERT INTO cve_references(href,entry_id) VALUES (@hrefval,@entryidval);";
+            MySqlCommand insertReference = new MySqlCommand(sql, conn);
+            insertReference.Parameters.AddWithValue("@hrefval", href);
+            insertReference.Parameters.AddWithValue("@entryidval", entry_id);
+
+            try
+            {
+                insertReference.ExecuteScalar();
+            }
+            catch (MySqlException e)
+            {
+                if (e.Number != MYSQL_ERROR_DUPLICATE_ENTRY)
+                {
+                    throw e;
+                }
+            }
+            return true;
+        }
+
+    }
+
     // Product is a structure to store vendors and products info.
      class Product
     {
@@ -224,6 +254,7 @@ namespace XMLParser
 
                 foreach (var entryNode in xml.RootNode.SubNodes) //nvd/entry
                 {
+                    List<Reference> references = new List<Reference>();
                     ProductEntry productEntry = new ProductEntry();
                     CveEntry cveEntry = new CveEntry(); //new object for very entry
                     if(entryNode.GetAttribute("id") !=null)
@@ -261,6 +292,18 @@ namespace XMLParser
                         {
                             cveEntry.Cwe = entrySubNode.GetAttribute("id").Value; //cwe id
                         }
+                        else if (entrySubNode.Name.Equals("vuln:references")) //nvd/entry/references/...
+                        { 
+                            foreach (var refNodes in entrySubNode.SubNodes)
+                            {
+                                if (refNodes.Name.Equals("vuln:reference") && refNodes.GetAttribute("href")!=null)
+                                {
+                                    Reference reference = new Reference();
+                                    reference.href= refNodes.GetAttribute("href").Value;
+                                    references.Add(reference);
+                                }
+                            }
+                        }
                         else if (entrySubNode.Name.Equals("vuln:cvss")) //nvd/entry/cvss/...
                         {
                             foreach (var cvssNodes in entrySubNode.SubNodes)
@@ -294,7 +337,18 @@ namespace XMLParser
                     if(!cveEntry.Save(conn))  //store entry
                         return -1;
 
-                    productEntry.EntryId = cveEntry.GetId(conn);
+                    int entry_id = cveEntry.GetId(conn);
+                    productEntry.EntryId = entry_id;
+
+                    foreach (var reference in references)
+                    {
+                        if (reference.entry_id == null)
+                        {
+                            reference.entry_id = entry_id;
+                            if (!reference.Save(conn))
+                                return -1;
+                        }
+                    }
 
                     if (!productEntry.Save(conn)) //store link b/w entry and product
                         return -1;
