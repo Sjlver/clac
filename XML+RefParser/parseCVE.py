@@ -2,6 +2,7 @@ import xml.sax
 import urllib2
 from thread import start_new_thread,allocate_lock
 import time
+import copy
 
 #lock to protect num_threads var
 lock = allocate_lock()
@@ -86,7 +87,7 @@ class CVEContentHandler(xml.sax.ContentHandler):
       num_threads += 1
       lock.release()
       
-      start_new_thread(handleContent, (self.currentVulnerability, self.content, self.URLs))
+      start_new_thread(handleContent, (copy.copy(self.currentVulnerability), copy.copy(self.content), copy.copy(self.URLs)))
       
       self.inVulnerability = False
       self.currentVulnerability = None
